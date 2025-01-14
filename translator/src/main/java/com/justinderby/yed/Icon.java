@@ -19,6 +19,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 public class Icon {
 
     private static final int MAX_HEIGHT_WIDTH = 60;
@@ -125,12 +129,68 @@ public class Icon {
                 .trim();
     }
 
+    private static SVGDocument sanitizeSVG(SVGDocument document) {
+        // Find and remove problematic filter elements
+        cleanupElements(document.getRootElement(), "filter");
+        
+        // Remove references to the filters in style attributes
+        cleanupFilterReferences(document.getRootElement());
+        
+        return document;
+    }
+
+    private static void cleanupElements(Element element, String tagToRemove) {
+        // Remove direct child elements of the specified tag
+        NodeList children = element.getChildNodes();
+        for (int i = children.getLength() - 1; i >= 0; i--) {
+            Node child = children.item(i);
+            if (child instanceof Element) {
+                Element childElement = (Element) child;
+                if (childElement.getTagName().contains(tagToRemove)) {
+                    element.removeChild(child);
+                } else {
+                    cleanupElements(childElement, tagToRemove);
+                }
+            }
+        }
+    }
+
+    private static void cleanupFilterReferences(Element element) {
+        // Remove filter references from style attributes
+        String style = element.getAttribute("style");
+        if (style != null && !style.isEmpty()) {
+            style = style.replaceAll("filter:url\\([^)]+\\);?", "")
+                        .replaceAll(";;", ";")
+                        .trim();
+            if (style.isEmpty()) {
+                element.removeAttribute("style");
+            } else {
+                element.setAttribute("style", style);
+            }
+        }
+        
+        // Remove filter attributes
+        if (element.hasAttribute("filter")) {
+            element.removeAttribute("filter");
+        }
+        
+        // Process child elements
+        NodeList children = element.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child instanceof Element) {
+                cleanupFilterReferences((Element) child);
+            }
+        }
+    }
+
     public static Icon fromFile(File svg) {
         final String parser = XMLResourceDescriptor.getXMLParserClassName();
         final SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
         try(var fis = new FileInputStream(svg)) {
-
-            return new Icon(factory.createSVGDocument(null, fis), svg.getName(), getReadableName(svg.getName()));
+            SVGDocument document = factory.createSVGDocument(null, fis);
+            document = sanitizeSVG(document); // Sanitize before creating the Icon
+            return new Icon(document, svg.getName(), getReadableName(svg.getName()));
         } catch (IOException e) {
             throw new RuntimeException("Error parsing " + svg.getAbsolutePath(), e);
         }

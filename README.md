@@ -1,8 +1,8 @@
 # Azure Architecture Icons Palettes for yED
 
-[yED](http://www.yworks.com/en/products/yfiles/yed/) is an awesome diagraming software. [Microsoft Dynamics 365 icons](https://learn.microsoft.com/en-us/dynamics365/get-started/icons) is a Microsoft-created icon set for use in Office 365 (aka O365) architecture diagrams.
+[yED](http://www.yworks.com/en/products/yfiles/yed/) is an awesome diagraming software. [Microsoft Dynamics 365 icons](https://learn.microsoft.com/en-us/dynamics365/get-started/icons) is a Microsoft-created icon set for use in Dynamics 365 (aka O365) architecture diagrams.
 
-This repository contains pre-made palettes to import O365 icons into yED to start diagramming with Office 365 Icons immediately!
+This repository contains pre-made palettes to import O365 icons into yED to start diagramming with Dynamics 365 Icons immediately!
 
 # Credits
 
