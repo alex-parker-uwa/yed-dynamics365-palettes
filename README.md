@@ -1,19 +1,23 @@
 # Azure Architecture Icons Palettes for yED
 
-[yED](http://www.yworks.com/en/products/yfiles/yed/) is an awesome diagraming software. [Azure Architecture Icons](https://docs.microsoft.com/en-us/azure/architecture/icons/) is an Azure-created icon set for use in architecture diagrams.
+[yED](http://www.yworks.com/en/products/yfiles/yed/) is an awesome diagraming software. [Microsoft Dynamics 365 icons](https://learn.microsoft.com/en-us/dynamics365/get-started/icons) is a Microsoft-created icon set for use in Office 365 (aka O365) architecture diagrams.
 
-This repository contains pre-made palettes to import into yED to start diagramming with Azure Icons immediately!
+This repository contains pre-made palettes to import O365 icons into yED to start diagramming with Office 365 Icons immediately!
 
-This repository was created based on the [yed-aws-palettes](https://github.com/JustDerb/yed-aws-palettes) repository. If you need AWS icons go check it out.
+# Credits
+
+This repository is based on the [yed-azure-palettes](https://github.com/danmana/yed-azure-palettes) repository, which itself was based on the [yed-aws-palettes](https://github.com/JustDerb/yed-aws-palettes) repository. If you need Azure or AWS icons go check them out.
 
 # Icon terms
-Microsoft releases these icons under the following [terms](https://docs.microsoft.com/en-us/azure/architecture/icons/#icon-terms):
+
+Microsoft releases these icons under the following [terms](https://learn.microsoft.com/en-us/dynamics365/get-started/icons#terms):
 
 > Microsoft permits the use of these icons in architectural diagrams, training materials, or documentation. You may copy, distribute, and display the icons only for the permitted use unless granted explicit permission by Microsoft. Microsoft reserves all other rights.
 
 *Disclaimer:* by using the `*.graphml` generated palettes you agree to these terms.
 
 *Note:* all other code, except the generated icons is released under MIT license.
+
 # Preview
 
 ![Screenshot](screenshot.png)
@@ -44,8 +48,10 @@ This repo has minimal automation around it, so it should update at most daily. I
 
 ```bash
 # Grab latest URL from website
-URL=$(curl -s https://learn.microsoft.com/en-us/azure/architecture/icons/ | grep 'Download SVG icons' | grep -oEi '//.*\.zip' | while read line; do echo "https:$line";  done)
+URL=$(curl -s https://learn.microsoft.com/en-us/dynamics365/get-started/icons | grep 'Download SVG icons' | grep -oEi '//.*\.zip' | while read line; do echo "https:$line";  done)
 echo "Latest URL: $URL"
 # Run the updater, commiting the results
 ./update.sh "$URL" true
 ```
+
+On Windows systems, "Git Bash" can be used to run these commands.

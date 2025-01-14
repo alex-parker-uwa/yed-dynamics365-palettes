@@ -54,31 +54,44 @@ public class Icon {
             return this.bounds;
         }
 
-        final CompletableFuture<Rectangle2D> bounds = new CompletableFuture<>();
-        final JSVGComponent component = new JSVGComponent();
-        try {
-            component.addGVTTreeBuilderListener(new GVTTreeBuilderAdapter() {
-                public void gvtBuildCompleted(GVTTreeBuilderEvent event) {
-                    bounds.complete(event.getGVTRoot().getBounds());
+        // Get root element
+        var root = this.document.getDocumentElement();
+        
+        // Try to get dimensions from viewBox first
+        String viewBox = root.getAttribute("viewBox");
+        if (viewBox != null && !viewBox.isEmpty()) {
+            String[] parts = viewBox.split("\\s+");
+            if (parts.length == 4) {
+                try {
+                    float width = Float.parseFloat(parts[2]);
+                    float height = Float.parseFloat(parts[3]);
+                    return this.bounds = new Rectangle2D.Float(0, 0, width, height);
+                } catch (NumberFormatException e) {
+                    System.err.println("Failed to parse viewBox values: " + viewBox);
                 }
-            });
-            component.setSVGDocument(this.document);
-            try {
-                this.bounds = bounds.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
             }
-        } finally {
-            component.dispose();
         }
-        return this.bounds;
+        
+        // Fall back to width/height attributes
+        String width = root.getAttribute("width");
+        String height = root.getAttribute("height");
+        
+        try {
+            return this.bounds = new Rectangle2D.Float(0, 0, 
+                Float.parseFloat(width), 
+                Float.parseFloat(height));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(
+                String.format("Could not determine SVG bounds. viewBox: %s, width: %s, height: %s", 
+                    viewBox, width, height));
+        }
     }
 
-    public Dimension getDimension(int maxHeightWidth) {
-        Rectangle2D bounds = getBounds();
+    public Dimension getDimension(int maxHeightWidth) {        
+        Rectangle2D bounds = getBounds();        
         double scaleFactor = Math.min(
                 maxHeightWidth / bounds.getWidth(),
-                maxHeightWidth / bounds.getHeight());
+                maxHeightWidth / bounds.getHeight());        
         return new Dimension(
                 (int)Math.min(Math.ceil(bounds.getWidth() * scaleFactor), maxHeightWidth),
                 (int)Math.min(Math.ceil(bounds.getHeight() * scaleFactor), maxHeightWidth));

@@ -36,7 +36,7 @@ echo >&2 "Downloading $1"
 curl "${URL}" --output "${TMP_DIR}/azure-icons.zip"
 unzip -o "${TMP_DIR}/azure-icons.zip" -d "${TMP_DIR}"
 
-ICON_DIR=$(cd "${TMP_DIR}"/Azure_Public_Service_Icons/Icons && pwd)
+ICON_DIR=$(cd "${TMP_DIR}"/Dynamics_365_Icons_scalable/ && pwd)
 ICON_VERSION=''
 REGEX_NUMBER='([0-9]+)'
 if ! [[ ${URL} =~ ${REGEX_NUMBER} ]]; then
@@ -98,11 +98,7 @@ for section in "${TMP_DIR}/sections/"*; do
     exit 1
   fi
   echo "Generating palette for: ${SECTION_NAME}"
-  java -jar "${DIR}/translator/target/yed-translator-1.0-SNAPSHOT.jar" \
-      --out "${DIR}/${SECTION_NAME}.graphml" \
-      --url "${URL}" \
-      --version "${ICON_VERSION}" \
-      "${section}/"*.svg
+  java -jar "${DIR}/translator/target/yed-translator-1.0-SNAPSHOT.jar" --out "${DIR}/${SECTION_NAME}.graphml" --url "${URL}" --version "${ICON_VERSION}" "${section}/"*.svg
 done
 
 echo "AZURE_ICONS_VERSION=${ICON_VERSION}" > "${DIR}/metadata.config"
